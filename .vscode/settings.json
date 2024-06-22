@@ -89,6 +89,7 @@
                 }
             }
         ]
-    }
+    },
+    "cmake.sourceDirectory": "/home/ilia/Desktop/DaisyExamples/libDaisy"
     
 }
