@@ -517,8 +517,9 @@ void readButtons() {
 enum Pots {
     POT_PITCH,
     POT_LFO,
-    POT_VOL,
     POT_OD,
+    POT_VOL,
+
     POT_TEMPO
 };
 
