@@ -3,6 +3,7 @@
 #include "eeprom.h"
 #include "rgbLeds.h"
 #include "RMSMeter.h"
+#include "system.h"
 
 using namespace daisy;
 using namespace daisysp;
@@ -15,13 +16,14 @@ static Metro tick;
 static Overdrive driveL, driveR;
 static Oscillator osc, lfo, lfo2, lfo3, lfoStereo2, lfoStereo;
 static RMSMeter rmsMeter;
-static float volumeMaster = 0;
+static float volumeMaster = 1;
 static bool AudioInConnected = false;
 
 #define SEQ_STEPS (16)
 #define N_BANDS (8)
 Svf filt[N_BANDS];
 static float filterGains[N_BANDS] = {};
+static float filterGainsTarget[N_BANDS] = {};
 const float filterCenterFreq[N_BANDS]
         = {110.0f, 160.0f, 240.0f, 350.0f, 525.0f, 775.0f, 1200.0f, 1800.0f};
 const float filterLfoMaxRange[N_BANDS]
@@ -37,15 +39,18 @@ static int selectedBand = 0;
 bool noteNeedOn[N_BANDS] = {};
 bool noteIsOn[N_BANDS] = {};
 
+float volumeTarget = 0.0f;
+float overdriveTarget = 0.0f;
 MappedFloatValue volumeParam(0.001, 1.0f, 1.0f, MappedFloatValue::Mapping::log);
+
 MappedFloatValue oscFreqParam(10.0f, 440.0f, 100.0f, MappedFloatValue::Mapping::log);
-MappedFloatValue overdriveParam(0.1f, 1.0f, 0.0f);
+MappedFloatValue overdriveParam(0.1f, 1.0f, 0.1f);
 MappedFloatValue lfoAmtParam(0.0, 1.0, 0.0f);
 MappedFloatValue stereoModParam(0.01, 0.9, 0.1, MappedFloatValue::Mapping::lin);
 MappedFloatValue tempo(1.0f, 20.0f, 10.0f, MappedFloatValue::Mapping::log);
-MappedFloatValue attackParam(0.001f, 0.5f, 0.05f);
-MappedFloatValue releaseParam(0.05f, 1.0f, 0.1f);
-MappedFloatValue filterGain(0.001f, 1.0f, 1.0f, MappedFloatValue::Mapping::log);
+MappedFloatValue attackParam(0.001f, 0.5f, 0.001f);
+MappedFloatValue releaseParam(0.05f, 1.0f, 0.05f);
+MappedFloatValue filterGainParam(0.001f, 1.0f, 1.0f, MappedFloatValue::Mapping::log);
 
 MidiHandler<MidiUartTransport> midi;
 FIFO<MidiEvent, 128> event_log;
@@ -90,6 +95,41 @@ void updateLfoAmp(float a) {
     lfo3.SetAmp(a);
 }
 
+
+void setFilterGain (int filter, float gain){
+    const float filterDriveDefault = 0.5;
+    const float filterResDefault = 0.5;
+    const float lim = 0.7;
+    if (gain > lim) {
+        float drive = ((gain - lim) / (1-lim)) * (1.f - filterDriveDefault) + filterDriveDefault;
+        filt[filter].SetDrive(drive);
+        float res = ((gain - lim) / (1-lim)) * (1.f - filterResDefault) + filterResDefault;
+        filt[filter].SetRes(res);
+        gain = 1.0f;
+    } else {
+        filt[filter].SetDrive(filterDriveDefault);
+        filt[filter].SetRes(filterResDefault);
+        gain = gain / lim;
+    }
+
+    fclamp(gain,0,1);
+    filterGainParam.SetFrom0to1(gain);
+    filterGainsTarget[filter] = filterGainParam.Get();
+    if (filterGainsTarget[filter] < 0.002) filterGainsTarget[filter] = 0;
+}
+
+void setVolume (float vol) {
+    volumeParam.SetFrom0to1(vol);
+    volumeTarget = volumeParam.Get();
+    if (volumeTarget < 0.01) volumeTarget = 0;
+}
+
+void setOverdrive (float od) {
+    overdriveParam.SetFrom0to1(od);
+    overdriveTarget = overdriveParam.Get();
+
+}
+
 void handleMidiCC(uint8_t cc, uint8_t val) {
 
     float value0To1 = (float) val / 127;
@@ -97,20 +137,15 @@ void handleMidiCC(uint8_t cc, uint8_t val) {
     int pos = 0;
 
     if (cc >= CC_BAND_LEVEL_1 && cc <= CC_BAND_LEVEL_8) {
-        filterGain.SetFrom0to1(value0To1);
         selectedBand = cc - CC_BAND_LEVEL_1;
-        filterGains[selectedBand] = filterGain.Get();
-        if (filterGains[selectedBand] < 0.002) filterGains[selectedBand] = 0;
+        setFilterGain(selectedBand, value0To1);
         bandWasUpdFromMidi[selectedBand] = true;
         return;
     }
 
     switch (cc) {
         case CC_VOLUME:
-            volumeParam.SetFrom0to1(value0To1);
-            volumeMaster = volumeParam.Get();
-            if (volumeMaster < 0.0012f) volumeMaster = 0;
-            volumeMaster = volumeMaster * (1.0f + 18.0f * (1.0f - 0.55f * overdriveParam.Get()));
+            setVolume(value0To1);
             volWasUpdFromMidi = true;
             break;
         case CC_LFO_AMT:
@@ -125,9 +160,7 @@ void handleMidiCC(uint8_t cc, uint8_t val) {
             pitchWasUpdFromMidi = true;
             break;
         case CC_OVERDRIVE:
-            overdriveParam.SetFrom0to1(value0To1);
-            driveL.SetDrive(overdriveParam.Get());
-            driveR.SetDrive(overdriveParam.Get());
+            setOverdrive(value0To1);
             odWasUpdFromMidi = true;
             break;
         case CC_ATTACK:
@@ -238,7 +271,8 @@ void processFilters(float in, float *outL, float *outR) {
     float R = 0;
     float stereoDepth = stereoModParam.Get();
     float stereoModL = 0.5f + 0.25f * stereoDepth * (stereoMod2 + stereoMod);
-    float stereoModR = stereoModL * -1.0f;
+    if (stereoModL < 0) stereoModL = 0;
+    float stereoModR = 1.0f - stereoModL;
 
     for (int i = 0; i < N_BANDS; ++i) {
         env[i].Process();
@@ -401,6 +435,7 @@ void HandleSystemRealTime(uint8_t srt_type) {
 GPIO LeftBtn, RightBtn, StartBtn;
 GPIO MuxPin[3];
 GPIO JackDetectPin;
+GPIO LedDataPin;
 
 Encoder EncPopulate, EncPosition, EncAttack, EncDecay;
 
@@ -417,6 +452,9 @@ void muxSet(uint8_t chan) {
 }
 
 void initControls() {
+
+    LedDataPin.Init(D23,GPIO::Mode::OUTPUT, GPIO::Pull::PULLDOWN);
+
     LeftBtn.Init(D18);
     RightBtn.Init(D17);
     StartBtn.Init(D1);
@@ -451,7 +489,74 @@ void initControls() {
 
 }
 
-#define BTN_READ_DELAY_MS (30)
+
+void DWT_Init()
+{
+    if (!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk))
+    {
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+        DWT->CYCCNT = 0;
+        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    }
+}
+
+inline void delay_cycles(uint32_t cycles)
+{
+    uint32_t start = DWT->CYCCNT;
+    while ((DWT->CYCCNT - start) < cycles)
+        ;
+}
+
+
+inline void send_bit(uint8_t bit)
+{
+    if (bit)
+    {
+        // Send logical '1': high 700ns, low 550ns
+        dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), true);
+        delay_cycles(280);
+        dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), false);
+        delay_cycles(220);
+    }
+    else
+    {
+        // Send logical '0': high 350ns, low 900ns
+        dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), true);
+        delay_cycles(140);
+        dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), false);
+        delay_cycles(360);
+    }
+}
+
+void send_byte(uint8_t b)
+{
+    for (int i = 7; i >= 0; i--)
+    {
+        send_bit((b >> i) & 1);
+    }
+}
+
+void ws2812_send(uint8_t* data, uint16_t led_count)
+{
+    __disable_irq();
+
+    for (uint16_t i = 0; i < led_count * 3; i++)
+    {
+        send_byte(data[i]);
+    }
+
+    __enable_irq();
+
+    // Reset pulse > 50 µs
+    dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), false);
+    hw.DelayMs(1);
+}
+
+
+
+
+
+#define BTN_READ_DELAY_MS (10)
 
 void readButtons() {
 
@@ -470,7 +575,9 @@ void readButtons() {
             if (selectedBand < 0) {
                 selectedBand = 0;
             }
-            env[selectedBand].Trigger();
+            if (seqStopped) {
+                env[selectedBand].Trigger();
+            }
         }
     } else {
         leftBtnHeld = false;
@@ -483,7 +590,9 @@ void readButtons() {
             if (selectedBand >= N_BANDS) {
                 selectedBand = N_BANDS - 1;
             }
-            env[selectedBand].Trigger();
+            if (seqStopped) {
+                env[selectedBand].Trigger();
+            }
         }
     } else {
         rightBtnHeld = false;
@@ -523,6 +632,33 @@ enum Pots {
     POT_TEMPO
 };
 
+
+float smoothUpdate (float val, float target) {
+    const float smoothFactor = 0.38f;
+    val += smoothFactor * (target - val);
+    return val;
+}
+
+void updateVolume () {
+    static float overdrive = 0.0f;
+    static float overdrive_prev = 0.0f;
+
+
+    for (int i = 0; i < 8; ++i) {
+        filterGains[i] = smoothUpdate(filterGains[i], filterGainsTarget[i]);
+    }
+    volumeMaster = smoothUpdate(volumeMaster, volumeTarget);
+
+    overdrive = smoothUpdate(overdrive, overdriveTarget);
+
+    if (overdrive != overdrive_prev) {
+        driveL.SetDrive(overdrive);
+        driveR.SetDrive(overdrive);
+    }
+    overdrive_prev = overdrive;
+}
+
+
 void readPots() {
     static int chan = 0;
     static float adc1Prev[8] = {};
@@ -533,48 +669,28 @@ void readPots() {
     static float adc2buf[8] = {};
     adc1buf[chan] = adc1f;
     adc2buf[chan] = adc2f;
-    const float threshold = 0.001f;
+    const float threshold = 0.01f;
     bool adc1ThresholdCrossed = false;
     bool adc2ThresholdCrossed = false;
     uint32_t now = System::GetNow();
     static uint32_t VUWasEnabledTime = 0;
 
-    if (adc1f < threshold) adc1f = 0.0f;
-    if (adc2f < threshold) adc2f = 0.0f;
+
     if (abs(adc1f - adc1Prev[chan]) > threshold) {
-        if (chan < 5) {
-            adc1ThresholdCrossed = true;
-        }
+        adc1ThresholdCrossed = true;
     }
     if (abs(adc2f - adc2Prev[chan]) > threshold) {
         adc2ThresholdCrossed = true;
     }
-    adc1Prev[chan] = adc1buf[chan];
-    adc2Prev[chan] = adc2buf[chan];
 
-    //filtering----------------------
-    static float filtBuf1[8][ADC_AVG_SAMPLES] = {};
-    static float filtBuf2[8][ADC_AVG_SAMPLES] = {};
-    static int filtIdx = 0;
-    filtBuf1[chan][filtIdx] = adc1f;
-    filtBuf2[chan][filtIdx] = adc2f;
+    adc1Prev[chan] = adc1f;
+    adc2Prev[chan] = adc2f;
 
-    float adcAvg1 = 0;
-    float adcAvg2 = 0;
-    for (int i = 0; i < ADC_AVG_SAMPLES; ++i) {
-        adcAvg1 += filtBuf1[chan][i];
-        adcAvg2 += filtBuf2[chan][i];
-    }
-    adc1f = adcAvg1 / ADC_AVG_SAMPLES;
-    adc2f = adcAvg2 / ADC_AVG_SAMPLES;
-    //--------------------------------
-
-
+    if (adc1f < threshold) adc1f = 0.0f;
+    if (adc2f < threshold) adc2f = 0.0f;
 
     if (adc2ThresholdCrossed || !bandWasUpdFromMidi[chan]) {
-        filterGain.SetFrom0to1(adc2f);
-        filterGains[chan] = filterGain.Get();
-        if (filterGains[chan] < 0.002) filterGains[chan] = 0;
+        setFilterGain(chan, adc2f);
         bandWasUpdFromMidi[chan] = false;
     }
 
@@ -597,33 +713,22 @@ void readPots() {
             break;
         case POT_VOL:
             if (!volWasUpdFromMidi || adc1ThresholdCrossed) {
-                volWasUpdFromMidi = false;
-                volumeParam.SetFrom0to1(adc1f);
+                setVolume(adc1f);
                 if (adc1ThresholdCrossed) {
                     ledRgb.enableVU(true, false);
                     VUWasEnabledTime = now;
                 }
-
-                float od01 = overdriveParam.GetAs0to1();
-                if (od01 > 0.6) od01 = 0.6;
-                float v01 = volumeParam.GetAs0to1();
-                v01 = v01 - od01;
-                volumeParam.SetFrom0to1(v01);
-                volumeMaster = volumeParam.Get() * 60.0f;
 
             }
             break;
         case POT_OD:
             if (!odWasUpdFromMidi || adc1ThresholdCrossed) {
                 odWasUpdFromMidi = false;
-                overdriveParam.SetFrom0to1(adc1f);
-                driveL.SetDrive(overdriveParam.Get());
-                driveR.SetDrive(overdriveParam.Get());
+                setOverdrive(adc1f);
                 if (adc1ThresholdCrossed) {
-                    ledRgb.enableVU(true, true);
+                    ledRgb.enableVU(true, false);
                     VUWasEnabledTime = now;
                 }
-
             }
             break;
         case POT_TEMPO: {
@@ -646,11 +751,6 @@ void readPots() {
     ++chan;
     if (chan >= 8) {
         chan = 0;
-
-        ++filtIdx;
-        if (filtIdx >= ADC_AVG_SAMPLES) {
-            filtIdx = 0;
-        }
     }
 
     muxSet(chan);
@@ -789,6 +889,7 @@ void initOsc() {
 }
 
 int main(void) {
+    
     hw.Configure();
     hw.Init();
     I2CHandle::Config i2c_conf;
@@ -823,9 +924,25 @@ int main(void) {
     uint32_t adcReadTime = now;
     initControls();
 
-//    System::ResetToBootloader()
+    System::Delay(100);
+    bool leftBtnPressed = !LeftBtn.Read();
+    bool rightBtnPressed = !RightBtn.Read();
+    if (leftBtnPressed && rightBtnPressed){
+       System::ResetToBootloader(System::BootloaderMode::DAISY_INFINITE_TIMEOUT);
+    }
+
+    DWT_Init();
+    const int num_leds = 8;
+    uint8_t led_data[num_leds * 3] = {0};
+
+for (int i = 0; i < num_leds*3; i++) {
+    led_data[i] = 122;
+}
 
     while (1) {
+
+        ws2812_send(led_data, num_leds);
+
         midi.Listen();
         while (midi.HasEvents()) {
             MidiEvent msg = midi.PopEvent();
@@ -903,6 +1020,7 @@ int main(void) {
         }
         readEncoders();
         updateLeds();
+        updateVolume();
 
 
 #ifdef PRINT_MIDI_MSG

@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "cStandard": "c11",
+      "compilerPath": "arm-none-eabi-g++",
+      "cppStandard": "c++23",
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "includePath": [
+        "**",
+        "../../libdaisy/**",
+        "../../DaisySP/**"
+      ],
+      "name": "Linux"
+    }
+  ],
+  "version": 4
+}

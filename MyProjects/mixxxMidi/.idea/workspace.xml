@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="mixxxMidi" targetName="all" />
+      <config projectName="mixxxMidi" targetName="program-dfu" />
+      <config projectName="mixxxMidi" targetName="openocd" />
+      <config projectName="mixxxMidi" targetName="program-boot" />
+      <config projectName="mixxxMidi" targetName="debug" />
+      <config projectName="mixxxMidi" targetName="program" />
+      <config projectName="mixxxMidi" targetName="debug_client" />
+      <config projectName="mixxxMidi" targetName="Makefile" />
+      <config projectName="mixxxMidi" targetName="build" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bca56652-59c8-456f-b704-01332c50cded" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../libDaisy" beforeDir="false" afterPath="$PROJECT_DIR$/../../libDaisy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../libDaisy/core/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../../libDaisy/core/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../libDaisy/core/startup_stm32h750xx.c" beforeDir="false" afterPath="$PROJECT_DIR$/../../libDaisy/core/startup_stm32h750xx.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../libDaisy/src/dev/leddriver.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../libDaisy/src/dev/leddriver.h" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MakefileLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="mixxxMidi" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="mixxxMidi" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
+      </map>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2024" />
+    <option name="minorVersion" value="1.4" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2ikKWuoXOta1Y4jRiL4gGIbujSU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "C/C++ File.mixxxMidi.cpp.executor": "Debug",
+    "Embedded GDB Server.all.executor": "Debug",
+    "Embedded GDB Server.mixxxMidi.cpp.executor": "Debug",
+    "Makefile Target.Makefile (1).executor": "Run",
+    "Makefile Target.Makefile.executor": "Run",
+    "Native Application.Makefile.executor": "Run",
+    "Native Application.build.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.advertisement.text.has.clang-format": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/ilia/Desktop/DaisyExamples/MyProjects/mixxxMidi/compile_commands.json",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "MakefileSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Native Application.build">
+    <configuration name="Makefile" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="Makefile" CONFIG_NAME="Makefile" version="1" RUN_PATH="$PROJECT_DIR$/build/mixxxMidi.elf">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="all" CONFIG_NAME="all" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="build" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="build" CONFIG_NAME="build" version="1" RUN_PATH="$PROJECT_DIR$/build/mixxxMidi.elf">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="debug" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="debug" CONFIG_NAME="debug" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="debug_client" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="debug_client" CONFIG_NAME="debug_client" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="openocd" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="openocd" CONFIG_NAME="openocd" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="program-boot" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="program-boot" CONFIG_NAME="program-boot" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="program-dfu" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="program-dfu" CONFIG_NAME="program-dfu" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="program" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="program" CONFIG_NAME="program" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="mixxxMidi.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="mixxxMidi.cpp" CONFIG_NAME="mixxxMidi.cpp">
+      <option name="sourceFile" value="mixxxMidi.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Makefile (1)" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/../../libDaisy/Makefile" target="" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="Makefile" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="mixxxMidi.cpp" type="com.jetbrains.cidr.embedded.customgdbserver.type" factoryName="com.jetbrains.cidr.embedded.customgdbserver.factory" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="mixxxMidi" TARGET_NAME="mixxxMidi.cpp" CONFIG_NAME="mixxxMidi.cpp" version="1" RUN_PATH="$PROJECT_DIR$/build/mixxxMidi.elf">
+      <custom-gdb-server version="1" gdb-connect="localhost: 61234" executable="$USER_HOME$/ST_GDB.sh" warmup-ms="0" download-type="UPDATED_ONLY" reset-cmd="monitor reset" reset-type="AFTER_DOWNLOAD" connection-mode="REMOTE" gdbserver-enable="false" console-enabled="false" console-port="0">
+        <debugger kind="GDB" isBundled="true" />
+        <extra-debugger-params debugger-working-dir="" debugger-env-pass-parent="true" custom-script="" />
+      </custom-gdb-server>
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="C/C++ File.mixxxMidi.cpp" />
+      <item itemvalue="Embedded GDB Server.mixxxMidi.cpp" />
+      <item itemvalue="Makefile Target.Makefile (1)" />
+      <item itemvalue="Makefile Target.Makefile" />
+      <item itemvalue="Native Application.Makefile" />
+      <item itemvalue="Native Application.all" />
+      <item itemvalue="Native Application.build" />
+      <item itemvalue="Native Application.debug" />
+      <item itemvalue="Native Application.debug_client" />
+      <item itemvalue="Native Application.openocd" />
+      <item itemvalue="Native Application.program-boot" />
+      <item itemvalue="Native Application.program-dfu" />
+      <item itemvalue="Native Application.program" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Makefile Target.Makefile" />
+        <item itemvalue="Makefile Target.Makefile (1)" />
+        <item itemvalue="C/C++ File.mixxxMidi.cpp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bca56652-59c8-456f-b704-01332c50cded" name="Changes" comment="" />
+      <created>1720029170231</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1720029170231</updated>
+      <workItem from="1720029171531" duration="2231000" />
+      <workItem from="1722786892513" duration="240000" />
+      <workItem from="1725841272608" duration="1746000" />
+      <workItem from="1725845016441" duration="114000" />
+      <workItem from="1725845145113" duration="991000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
