@@ -3,25 +3,23 @@
 //
 
 #include "rgbLeds.h"
+#include "FROG.h"
 
 extern DaisySeed hw;
-LedDriverPca9685 <2,true> pca9685;
-static LedDriverPca9685<2, true>::DmaBuffer DMA_BUFFER_MEM_SECTION
-        led_dma_buffer_a,
-        led_dma_buffer_b;
 
 
-int RLeds [N_LEDS] = {3, 0, 6, 14, 11, 8, 18, 21};
-int GLeds [N_LEDS] = {4, 1, 7, 13, 10, 16, 19, 22};
-int BLeds [N_LEDS] = {5, 2, 15, 12, 9, 17, 20, 23};
+int GLeds [N_LEDS] = {0, 3, 6, 9, 12, 15, 18, 21};
+int RLeds [N_LEDS] = {1, 4, 7, 10, 13, 16, 19, 22};
+int BLeds [N_LEDS] = {2, 5, 8, 11, 14, 17, 20, 23};
+
 
 
 void MyLedRgb::init(I2CHandle *i2CHandle) {
-    i2c = i2CHandle;
-    uint8_t   addr[2] = {0x40, 0x41};
-    pca9685.Init(*i2c, addr, led_dma_buffer_a, led_dma_buffer_b);
-    pca9685.SetAllToRaw(0);
-    pca9685.SwapBuffersAndTransmit();
+
+    for (int i = 0; i < N_LEDS * 3; ++i) {
+        buf[i] = 0;
+    }
+    ws2812_send(buf, N_LEDS * 3);
 }
 
 
@@ -32,8 +30,9 @@ void MyLedRgb::setSelected(int i) {
 
 void MyLedRgb::update() {
 
-    pca9685.SetAllToRaw(0);
-
+    for (int i = 0; i < N_LEDS * 3; ++i) {
+        buf[i] = 0;
+    }
 
     if (VUEnabled) {
         float VULed[8];
@@ -76,7 +75,7 @@ void MyLedRgb::update() {
     } else {
         for (int i = 0; i < N_LEDS; ++i) {
             if (i != selected) {
-                pca9685.SetLed(GLeds[i], amplitude[i] * 0.5f);
+                setLed(GLeds[i], amplitude[i] * 0.5f);
             } else {
                 float a  = 0.6f + 0.4f * amplitude[i];
                 setLed(GLeds[i], a * 0.65f);
@@ -86,11 +85,8 @@ void MyLedRgb::update() {
         }
     }
 
-    for (int i = 0; i < N_LEDS; i++) {
 
-    }
-
-    pca9685.SwapBuffersAndTransmit();
+    ws2812_send(buf, N_LEDS * 3);
 }
 
 void MyLedRgb::setEnvelopeAmplitude(int i, float amp) {
@@ -108,10 +104,7 @@ void MyLedRgb::enableVU(bool en, bool red) {
 }
 
 void MyLedRgb::setLed(int i, float val) {
-    pca9685.SetLed(i, val);
-    if (val == 0.0f) {
-        pca9685.SetLedRaw(i, 0);
-    }
+    buf[i] = val * 0xff;
 }
 
 

@@ -13,7 +13,7 @@ using namespace daisy::seed;
 class MyLedRgb {
 public:
     void init(I2CHandle* i2CHandle);
-    const uint16_t PwmMax = 4095;
+
 
     void update();
     void setSelected (int i);
@@ -30,6 +30,7 @@ private:
     bool VURed = false;
     float VUL = 0.0f;
     float VUR = 0.0f;
+    uint8_t buf[8*3] = {};
 };
 
 

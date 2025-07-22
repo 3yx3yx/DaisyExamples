@@ -14,7 +14,7 @@ void initEnvelopes();
 void initFilters();
 void setSeq(int band, int steps, int pos);
 void processSeq();
-
+void ws2812_send(uint8_t* data, uint16_t led_count);
 void initSeq();
 
 

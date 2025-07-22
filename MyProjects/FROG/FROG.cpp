@@ -508,31 +508,31 @@ inline void delay_cycles(uint32_t cycles)
 }
 
 
-inline void send_bit(uint8_t bit)
+inline void ws2812_send_bit(uint8_t bit)
 {
     if (bit)
     {
         // Send logical '1': high 700ns, low 550ns
         dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), true);
-        delay_cycles(280);
+        delay_cycles(280 * 0.7);
         dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), false);
-        delay_cycles(220);
+        delay_cycles(220* 0.7);
     }
     else
     {
         // Send logical '0': high 350ns, low 900ns
         dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), true);
-        delay_cycles(140);
+        delay_cycles(140* 0.7);
         dsy_gpio_write(reinterpret_cast<const dsy_gpio*>(&LedDataPin), false);
-        delay_cycles(360);
+        delay_cycles(360* 0.7);
     }
 }
 
-void send_byte(uint8_t b)
+void ws2812_send_byte(uint8_t b)
 {
     for (int i = 7; i >= 0; i--)
     {
-        send_bit((b >> i) & 1);
+        ws2812_send_bit((b >> i) & 1);
     }
 }
 
@@ -542,7 +542,7 @@ void ws2812_send(uint8_t* data, uint16_t led_count)
 
     for (uint16_t i = 0; i < led_count * 3; i++)
     {
-        send_byte(data[i]);
+        ws2812_send_byte(data[i]);
     }
 
     __enable_irq();
@@ -932,16 +932,11 @@ int main(void) {
     }
 
     DWT_Init();
-    const int num_leds = 8;
-    uint8_t led_data[num_leds * 3] = {0};
 
-for (int i = 0; i < num_leds*3; i++) {
-    led_data[i] = 122;
-}
+
+
 
     while (1) {
-
-        ws2812_send(led_data, num_leds);
 
         midi.Listen();
         while (midi.HasEvents()) {
